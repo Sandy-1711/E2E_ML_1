@@ -1,2 +1,5 @@
 /venv
 e2e_ml_1.egg-info/
+artifacts/
+archive/
+logs/
