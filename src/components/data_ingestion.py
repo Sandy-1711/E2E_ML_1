@@ -5,6 +5,9 @@ from src.logger import logging
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from dataclasses import dataclass
+from src.components.data_transformation import DataTransformation
+from src.components.data_transformation import DataTransformationConfig
+
 
 @dataclass
 class DataIngestionConfig:
@@ -27,18 +30,24 @@ class DataIngestion:
             logging.info("Train test split initiated")
             train_set, test_set = train_test_split(df, test_size=0.2, random_state=42) 
             # Saving the train dataset to train path
-            train_set.to_csv(self.ingestion_config.train_data_path)
+            train_set.to_csv(self.ingestion_config.train_data_path, index=False, header=True)
             # Saving the test dataset to test path
-            test_set.to_csv(self.ingestion_config.test_data_path)
+            test_set.to_csv(self.ingestion_config.test_data_path, index=False, header=True)
             logging.info("Ingestion of the data is completed")
             return (
                 self.ingestion_config.train_data_path,
                 self.ingestion_config.test_data_path,
-                self.ingestion_config.raw_data_path
+                # self.ingestion_config.raw_data_path
             )
         except Exception as e:
             raise CustomException(e,sys)
         
+
 if __name__ == "__main__":
-    obj = DataIngestion()
-    obj.initiate_data_ingestion()
+    try:
+        obj = DataIngestion()
+        train_data_path, test_data_path = obj.initiate_data_ingestion()
+        data_transformation_obj = DataTransformation()
+        train_arr, test_arr, _ = data_transformation_obj.initiate_data_transformation(train_path=train_data_path,test_path= test_data_path)
+    except Exception as e:
+        raise CustomException(e,sys)
